@@ -26,4 +26,4 @@ while (currentFramesCounter < frames // CUT - FRAMESKIP and ret):
 videodata.release()
 
 img = buf[23]
-cv2.imwrite('tes5.png', img)
+cv2.imwrite('image.png', img)
