@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 
-
+import matplotlib.pyplot as plt
 
 
 
@@ -16,11 +16,14 @@ log_image = c * (np.log(imgblur + 1))
 # Specify the data type so that
 # float value will be converted to int
 log_image = np.array(log_image, dtype=np.uint8)
+bilateral = cv2.bilateralFilter(log_image, 15, 75, 75)
 t, th3 = cv2.threshold(log_image, 200, 255, cv2.THRESH_BINARY_INV)
 
 
 
-edge = cv2.Canny(image=log_image, threshold1=50, threshold2=200)
+edge = cv2.Canny(image=bilateral, threshold1=50, threshold2=200)
+plt.imshow(edge,  cmap='gray')
+plt.show()
 
 cv2.imwrite('image_gray.png', imggray)
 cv2.imwrite('image_blur.png', imgblur)
