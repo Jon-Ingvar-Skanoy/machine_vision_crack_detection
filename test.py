@@ -3,7 +3,7 @@ import cv2
 import copy
 import matplotlib.pyplot as plt
 import pickle
-IMGS = pickle.load(open("images.p", "rb"))
+IMGS = pickle.load(open("imagess.p", "rb"))
 
 img = IMGS[0]
 downscale = 1

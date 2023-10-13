@@ -28,6 +28,6 @@ while (currentFramesCounter < frames // CUT - FRAMESKIP and ret):
 videodata.release()
 
 
-pickle.dump(buf, open("images.p", "wb"))
+pickle.dump(buf, open("imagess.p", "wb"))
 
 
