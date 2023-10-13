@@ -5,30 +5,27 @@ import matplotlib.pyplot as plt
 import pickle
 IMGS = pickle.load(open("imagess.p", "rb"))
 
-img = IMGS[0]
+img = IMGS[300]
 downscale = 1
 imggray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 #imggray = cv2.pyrDown(imggray)
 #imggray = cv2.pyrDown(imggray)
 
-imgblur = cv2.GaussianBlur(imggray, (7,7), 40)
-imgblur = cv2.medianBlur(imgblur,   7)
-imgblur = cv2.medianBlur(imgblur,   7)
-imgblur = cv2.medianBlur(imgblur,   7)
-imgblur = cv2.medianBlur(imgblur,   7)
+imgblur = cv2.GaussianBlur(imggray, (13,13), 40)
+imgblur = cv2.medianBlur(imgblur,   15)
 
-imgblur = cv2.equalizeHist(imggray)
+
+#imgblur = cv2.equalizeHist(imggray)
 c = 255 / np.log(1 + np.max(imgblur))
 log_image = c * (np.log(imgblur + 1))
 
 # Specify the data type so that
 # float value will be converted to int
 log_image = np.array(log_image, dtype=np.uint8)
-log_image = cv2.medianBlur(log_image,   7)
-log_image = cv2.medianBlur(log_image,   7)
+
 bilateral = cv2.bilateralFilter(log_image, 50, 1, 1)
 hist = cv2.calcHist([bilateral],[0],None,[256],[0,256])
-t, th3 = cv2.threshold(bilateral, bilateral.max()*0.6, 255, cv2.THRESH_BINARY_INV)
+th3 = cv2.adaptiveThreshold(bilateral, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,11,1)
 th3 = cv2.medianBlur(th3,   7)
 
 print(len(IMGS))
