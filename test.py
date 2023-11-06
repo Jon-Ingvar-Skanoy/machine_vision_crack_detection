@@ -3,9 +3,9 @@ import cv2
 import copy
 import matplotlib.pyplot as plt
 import pickle
-IMGS = pickle.load(open("imagess.p", "rb"))
+IMGS = pickle.load(open("imagesS.p", "rb"))
 
-img = IMGS[120]
+img = IMGS[221]
 downscale = 1
 
 
@@ -35,7 +35,7 @@ log_image = np.array(log_image, dtype=np.uint8)
 #log_image = cv2.GaussianBlur(log_image, (13,13), 40)
 #bilateral = cv2.bilateralFilter(log_image, 50, 1, 1)
 hist = cv2.calcHist([log_image],[0],None,[256],[0,256])
-th3 = cv2.adaptiveThreshold(log_image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,9,1)
+th3 = cv2.adaptiveThreshold(log_image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV,7,1)
 
 
 
@@ -51,11 +51,11 @@ for i in range(0, nlabels - 1):
     if areas[i] >= 100:   #keep
         th3[labels == i + 1] = 255
 
-linesP = cv2.HoughLinesP(th3, 1, 1* np.pi / 180, 100, None, 100, 40)
+linesP = cv2.HoughLinesP(th3, 0.6, 10* np.pi / 180, 45, None, 90, 5)
 if linesP is not None:
         for i in range(0, len(linesP)):
             l = linesP[i][0]
-            cv2.line(th3, (l[0], l[1]), (l[2], l[3]), (0,0,255), 3, cv2.LINE_AA)
+            cv2.line(th3, (l[0], l[1]), (l[2], l[3]), (255,0,0), 30, cv2.LINE_AA)
 
 nlabels, labels, stats, centroids = cv2.connectedComponentsWithStats(th3, None, None, None, 8, cv2.CV_32S)
 
