@@ -3,8 +3,8 @@ import cv2
 import matplotlib.pyplot as plt
 import time
 import pickle
-CUT = 2
-FRAMESKIP = 90
+CUT = 1
+FRAMESKIP = 30
 videodata = cv2.VideoCapture(r"C:\Users\jonin\Desktop\machine vision\20230926_135215.mp4")
 
 frames = int(videodata.get(cv2.CAP_PROP_FRAME_COUNT))
