@@ -48,6 +48,23 @@ for i in range(0, nlabels - 1):
     if areas[i] >= 300:   #keep
         result[labels == i + 1] = 255
 
+greenfiltertestTH3 = copy.deepcopy(result)
+greenfiltertest = copy.deepcopy(img)
+greenfiltertest = cv2.pyrDown(greenfiltertest)
+greenfiltertest = cv2.pyrDown(greenfiltertest)
+
+green_lower1 = (20,71,34)
+green_upper1 = (121,193,154)
+green_lower2 = (5,56,19)
+green_upper2 = (69,149,100)
+
+mask1 = cv2.inRange(greenfiltertest, green_lower1,green_upper1)
+result1 = cv2.bitwise_and(greenfiltertestTH3,cv2.bitwise_not(mask1))
+mask2 = cv2.inRange(greenfiltertest, green_lower2,green_upper2)
+result2 = cv2.bitwise_and(result1,cv2.bitwise_not(mask2))
+cv2.imshow("mask", greenfiltertest)
+cv2.waitKey(0)
+
 #print(len(IMGS))
 #bikefiltertestTH3 = copy.deepcopy(th3)
 #bikefiltertest = copy.deepcopy(img)
