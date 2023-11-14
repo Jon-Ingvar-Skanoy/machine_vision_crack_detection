@@ -79,6 +79,23 @@ print(len(IMGS))
 print(np.sum(result)/255)
 plt.hist(imgblur.ravel(),256,[0,256]); plt.show()
 
+greenfiltertestTH3 = copy.deepcopy(result)
+greenfiltertest = copy.deepcopy(img)
+greenfiltertest = cv2.pyrDown(greenfiltertest)
+greenfiltertest = cv2.pyrDown(greenfiltertest)
+
+green_lower1 = (20,71,34)
+green_upper1 = (121,193,154)
+green_lower2 = (5,56,19)
+green_upper2 = (69,149,100)
+
+mask1 = cv2.inRange(greenfiltertest, green_lower1,green_upper1)
+result1 = cv2.bitwise_and(greenfiltertestTH3,cv2.bitwise_not(mask1))
+mask2 = cv2.inRange(greenfiltertest, green_lower2,green_upper2)
+result2 = cv2.bitwise_and(result1,cv2.bitwise_not(mask2))
+cv2.imshow("mask2", cv2.bitwise_not(mask2))
+cv2.waitKey(0)
+
 #plt.imshow(th3,  cmap='gray')
 #plt.show()
 cv2.imwrite('image.png', img)
