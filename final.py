@@ -38,10 +38,24 @@ def readVideo(inputFile):
         ret, buf[currentFramesCounter // FRAMESKIP] = videodata.read()
         currentFramesCounter += FRAMESKIP
         videodata.set(cv2.CAP_PROP_POS_FRAMES, currentFramesCounter)
-        print(currentFramesCounter / FRAMESKIP)
+        #print(currentFramesCounter / FRAMESKIP)
 
     videodata.release()
     return buf
+
+def brownFilter(image, th3, i):
+    brownFilterInput = copy.deepcopy(image)
+    brownFilterInput = cv2.pyrDown(brownFilterInput)
+    brownFilterInput = cv2.pyrDown(brownFilterInput)
+
+    brown_lower = (57,73,119)
+    brown_upper = (94,109,154)
+
+    mask1 = cv2.inRange(brownFilterInput,brown_lower,brown_upper)
+    kernel = np.ones((2,2),np.uint8)
+    mask = cv2.bitwise_not(cv2.dilate(mask1,kernel, iterations=10))
+
+    return cv2.bitwise_and(th3,mask)
 
 def whiteFilter(image, th3):
     whiteFilterInput = copy.deepcopy(image)
@@ -129,6 +143,7 @@ for img in tqdm.tqdm(IMGS):
     th3 = removeTooSmall(th3, 100)
 
     result, mask = whiteFilter(img,th3)
+    result = brownFilter(img,th3,i)
     result = bikeFilter(result)
     result = removeTooSmall(result, 110)
 
