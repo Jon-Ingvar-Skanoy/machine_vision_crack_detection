@@ -5,11 +5,13 @@ import pickle
 import tqdm
 import time
 import easygui
+import datetime
 filepath = easygui.fileopenbox()
 
 IMGS = pickle.load(open(filepath, "rb"))
 downscale = 4
 cracks = 0
+FRAMESKIP = 30
 
 def weight_center(image):
 
@@ -17,7 +19,6 @@ def weight_center(image):
 
 def readVideo(inputFile):
     CUT = 1
-    FRAMESKIP = 30
     videodata = cv2.VideoCapture(inputFile)
 
     frames = int(videodata.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -96,6 +97,8 @@ def remove_to_strait_lines(image):
             cv2.line(image, (l[0], l[1]), (l[2], l[3]), (0, 0, 0), 30, cv2.LINE_AA)
     return image
 i = 0
+
+f = open(r"detected_cracks/detected cracks.txt", "a")
 for img in tqdm.tqdm(IMGS):
 
     image_blur = blur_image(img)
@@ -130,5 +133,5 @@ for img in tqdm.tqdm(IMGS):
         time.sleep(0.1)
         cracks +=1
     i+=1
-
+f.close()
 print(cracks)
