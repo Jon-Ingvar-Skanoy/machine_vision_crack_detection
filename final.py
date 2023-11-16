@@ -6,9 +6,9 @@ import tqdm
 import time
 import easygui
 import datetime
-filepath = easygui.fileopenbox()
+import os
 
-IMGS = pickle.load(open(filepath, "rb"))
+ #pickle.load(open(filepath, "rb"))
 downscale = 4
 cracks = 0
 FRAMESKIP = 30
@@ -98,7 +98,19 @@ def remove_to_strait_lines(image):
     return image
 i = 0
 
+filepath = easygui.fileopenbox()
+
+if filepath.endswith('p'):
+    IMGS = pickle.load(open(filepath, "rb"))
+else:
+    IMGS = readVideo(filepath)
+
+if not os.path.isdir("detected_cracks"):
+    os.makedirs("detected_cracks")
+f = open(r"detected_cracks/detected cracks.txt", "w")
+f.close()
 f = open(r"detected_cracks/detected cracks.txt", "a")
+crackIndexList = []
 for img in tqdm.tqdm(IMGS):
 
     image_blur = blur_image(img)
