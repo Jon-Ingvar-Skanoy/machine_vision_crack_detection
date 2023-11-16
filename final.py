@@ -1,7 +1,6 @@
 import numpy as np
 import cv2
 import copy
-import matplotlib.pyplot as plt
 import pickle
 import tqdm
 import time
@@ -12,7 +11,7 @@ IMGS = pickle.load(open(filepath, "rb"))
 downscale = 4
 cracks = 0
 
-def weightCenter(image):
+def weight_center(image):
 
     pass
 
@@ -121,9 +120,10 @@ for img in tqdm.tqdm(IMGS):
     score = np.sum(result) / 255
 
     if score > 1000:
+        f.write(f"\nCracks detected at {datetime.timedelta(seconds=(len(IMGS)*30)//FRAMESKIP)}\n      Score: {score},       Index: {i}")
         cv2.imwrite(f'detected_cracks/{i}image.png', img)
-        cv2.imwrite(f'detected_cracks/{i}image_result.png', result)
-        cv2.imwrite(f'detected_cracks/{i}image_mask.png', mask)
+        cv2.imwrite(f'detected_cracks/{i}image_result{score}.png', result)
+      #  cv2.imwrite(f'detected_cracks/{i}image_mask.png', mask)
         #cv2.imwrite(f'detected_cracks/image_blur{i}.png', image_blur)
       #  cv2.imwrite(f'detected_cracks/image_log{i}.png',log_image)
        # cv2.imwrite(f'detected_cracks/image_th{i}.png', th3)
