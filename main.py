@@ -11,11 +11,11 @@ import os
 # pickle.load(open(filepath, "rb"))
 downscale = 4
 cracks = 0
-FRAMESKIP = 30
+FRAMESKIP = 30 #How many frames between each new image. By default, it encodes every 30th image.
 
 
 def read_video(input_file):
-    cut = 1
+    cut = 1 #What portion of the video is encoded. 1 is the whole video, 2 is half, etc
     video_data = cv2.VideoCapture(input_file)
 
     frames = int(video_data.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -55,6 +55,20 @@ def brown_filter(image, th3):
 
     return cv2.bitwise_and(th3, mask)
 
+def green_filter(image, th3):
+    green_filter_input = copy.deepcopy(image)
+    green_filter_input = cv2.pyrDown(green_filter_input)
+    green_filter_input = cv2.pyrDown(green_filter_input)
+
+    green_lower = (73,141,119)#(20,71,34)
+    green_upper = (112,165,146)#(91,125,99)
+
+    mask1 = cv2.inRange(green_filter_input, green_lower, green_upper)
+    kernel = np.ones((4, 4), np.uint8)
+    mask = cv2.bitwise_not(cv2.dilate(mask1, kernel, iterations=10))
+    cv2.imshow("greenmask", mask)
+    cv2.waitKey(0)
+    return cv2.bitwise_and(th3, mask)
 
 def white_filter(image, th3):
     white_filter_input = copy.deepcopy(image)
@@ -71,7 +85,13 @@ def white_filter(image, th3):
 
     mask = cv2.bitwise_not(mask)
 
-    return cv2.bitwise_and(th3, mask), mask
+    return cv2.bitwise_and(th3, mask)
+
+def colorFilter(image, th3):
+    result = brown_filter(image,th3)
+    result = green_filter(image,result)
+    result = white_filter(image,result)
+    return result
 
 
 def remove_too_small(image, limit):
@@ -105,7 +125,7 @@ def blur_image(image):
     return img_blur
 
 
-def remove_to_strait_lines(image):
+def remove_too_straight_lines(image):
     linesp = cv2.HoughLinesP(image, 0.6, 7 * np.pi / 180, 45, None, 90, 5)
     if linesp is not None:
         for i in range(0, len(linesp)):
@@ -141,12 +161,11 @@ for img in tqdm.tqdm(IMGS):
 
     th3 = remove_too_small(th3, 100)
 
-    th3 = remove_to_strait_lines(th3)
+    th3 = remove_too_straight_lines(th3)
 
     th3 = remove_too_small(th3, 100)
 
-    result, mask = white_filter(img, th3)
-    result = brown_filter(img, result)
+    result = colorFilter(img,th3)
     result = bike_filter(result)
     result = remove_too_small(result, 110)
 

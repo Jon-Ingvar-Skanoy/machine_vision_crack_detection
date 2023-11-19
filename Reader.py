@@ -3,9 +3,11 @@ import cv2
 import matplotlib.pyplot as plt
 import time
 import pickle
-CUT = 2
-FRAMESKIP = 30
-videodata = cv2.VideoCapture(r"20231111_134039.mp4")
+import easygui
+
+CUT = 1 #What portion of the video is encoded. 1 is the whole video, 2 is half, etc
+FRAMESKIP = 30 #How many frames between each new image. By default, it encodes every 30th image.
+videodata = cv2.VideoCapture(easygui.fileopenbox())
 
 frames = int(videodata.get(cv2.CAP_PROP_FRAME_COUNT))
 width = int(videodata.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -24,7 +26,6 @@ while (currentFramesCounter < frames // CUT - FRAMESKIP and ret):
     ret, buf[currentFramesCounter // FRAMESKIP] = videodata.read()
     currentFramesCounter += FRAMESKIP
     videodata.set(cv2.CAP_PROP_POS_FRAMES, currentFramesCounter)
-    print(currentFramesCounter/FRAMESKIP)
 
 
 videodata.release()
