@@ -66,8 +66,6 @@ def green_filter(image, th3):
     mask1 = cv2.inRange(green_filter_input, green_lower, green_upper)
     kernel = np.ones((4, 4), np.uint8)
     mask = cv2.bitwise_not(cv2.dilate(mask1, kernel, iterations=10))
-    cv2.imshow("greenmask", mask)
-    cv2.waitKey(0)
     return cv2.bitwise_and(th3, mask)
 
 def white_filter(image, th3):
@@ -174,7 +172,7 @@ for img in tqdm.tqdm(IMGS):
     if score > 1000:
         crackIndexList.append(i)
         if i + 1 in crackIndexList:
-            f.write(f"\n        Another subsequent crack found.")
+            f.write(f"\n        Another subsequent crack found. Score: {score}, Index: {i}")
         else:
             f.write(
                 f"\nCracks detected at {datetime.timedelta(seconds=(i * 30) // FRAMESKIP)}\n    Score: {score},    Index: {i}")
