@@ -8,12 +8,11 @@ import easygui
 import datetime
 import os
 
-
 downscale = 4
 cracks = 0
 FRAMESKIP = 30  # How many frames between each new image. By default, it encodes every 30th frame.
 
-# reads video to a list of images
+# Reads video to a list of images. If not needed, Pickle-files are included in the repository to test with.
 def read_video(input_file):
     cut = 1  # What portion of the video is encoded. 1 is the whole video, 2 is the first half, 3 is the first third, etc
     video_data = cv2.VideoCapture(input_file)
@@ -39,7 +38,8 @@ def read_video(input_file):
     video_data.release()
     return buf
 
-
+# Use a mask to locate all too-brown pixels, and remove any overlap from the thresholded image
+# Mostly to remove leaves and dirt
 def brown_filter(image, th3):
     brown_filter_input = copy.deepcopy(image)
     brown_filter_input = cv2.pyrDown(brown_filter_input)
@@ -124,7 +124,8 @@ def blur_image(image):
     img_blur = cv2.medianBlur(img_blur, 9)
     return img_blur
 
-
+# Use a hough line transform to locate all suspiciously straight lines, and remove them as they're likely
+# intentionally placed infrastructure
 def remove_too_straight_lines(image):
     linesp = cv2.HoughLinesP(image, 0.6, 7 * np.pi / 180, 45, None, 90, 5)
     if linesp is not None:
@@ -136,6 +137,8 @@ def remove_too_straight_lines(image):
 
 i = 0
 
+#Can choose either Pickle files or mp4 files.
+#Pickle files containing encoded videos are included in the repository.
 filepath = easygui.fileopenbox()
 
 if filepath.endswith('p'):
