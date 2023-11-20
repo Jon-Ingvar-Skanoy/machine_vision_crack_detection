@@ -8,14 +8,14 @@ import easygui
 import datetime
 import os
 
-# pickle.load(open(filepath, "rb"))
+
 downscale = 4
 cracks = 0
-FRAMESKIP = 30 #How many frames between each new image. By default, it encodes every 30th image.
+FRAMESKIP = 30  # How many frames between each new image. By default, it encodes every 30th frame.
 
-
+# reads video to a list of images
 def read_video(input_file):
-    cut = 1 #What portion of the video is encoded. 1 is the whole video, 2 is half, etc
+    cut = 1  # What portion of the video is encoded. 1 is the whole video, 2 is the first half, 3 is the first third, etc
     video_data = cv2.VideoCapture(input_file)
 
     frames = int(video_data.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -35,7 +35,6 @@ def read_video(input_file):
         ret, buf[current_frames_counter // FRAMESKIP] = video_data.read()
         current_frames_counter += FRAMESKIP
         video_data.set(cv2.CAP_PROP_POS_FRAMES, current_frames_counter)
-        # print(current_frames_counter / FRAMESKIP)
 
     video_data.release()
     return buf
@@ -50,24 +49,28 @@ def brown_filter(image, th3):
     brown_upper = (94, 109, 154)
 
     mask1 = cv2.inRange(brown_filter_input, brown_lower, brown_upper)
-    kernel = np.ones((4, 4), np.uint8)
+    kernel = np.ones((4, 4), np.uint8)  # kernel size for dilation
     mask = cv2.bitwise_not(cv2.dilate(mask1, kernel, iterations=10))
 
     return cv2.bitwise_and(th3, mask)
 
+# Use a mask to locate all too-green pixels, and remove any overlap from the thresholded image
+# Mostly to remove foliage and moss
 def green_filter(image, th3):
     green_filter_input = copy.deepcopy(image)
     green_filter_input = cv2.pyrDown(green_filter_input)
     green_filter_input = cv2.pyrDown(green_filter_input)
 
-    green_lower = (73,141,119)#(20,71,34)
-    green_upper = (112,165,146)#(91,125,99)
+    green_lower = (73, 141, 119)
+    green_upper = (112, 165, 146)
 
     mask1 = cv2.inRange(green_filter_input, green_lower, green_upper)
-    kernel = np.ones((4, 4), np.uint8)
+    kernel = np.ones((4, 4), np.uint8)  # kernel size for dilation
     mask = cv2.bitwise_not(cv2.dilate(mask1, kernel, iterations=10))
     return cv2.bitwise_and(th3, mask)
 
+# Use a mask to locate all too-white pixels, and remove any overlap from the thresholded image
+# Mostly to remove markings on the road
 def white_filter(image, th3):
     white_filter_input = copy.deepcopy(image)
     white_filter_input = cv2.pyrDown(white_filter_input)
@@ -77,25 +80,24 @@ def white_filter(image, th3):
     white_upper = (255, 255, 255)
 
     mask1 = cv2.inRange(white_filter_input, white_lower, white_upper)
-    kernel = np.ones((2, 2), np.uint8)
+    kernel = np.ones((2, 2), np.uint8)  # kernel size for dilation
     mask = cv2.dilate(mask1, kernel, iterations=10)
-    # mask = removeTooSmall(mask, 300)
 
     mask = cv2.bitwise_not(mask)
 
     return cv2.bitwise_and(th3, mask)
 
-def colorFilter(image, th3):
-    result = brown_filter(image,th3)
-    result = green_filter(image,result)
-    result = white_filter(image,result)
+# Apply all colour filters
+def color_filter(image, th3):
+    result = brown_filter(image, th3)
+    result = green_filter(image, result)
+    result = white_filter(image, result)
     return result
 
-
+# Removes too small positive areas, as they're likely noise
 def remove_too_small(image, limit):
     nlabels, labels, stats, centroids = cv2.connectedComponentsWithStats(image, None, None, None, 8, cv2.CV_32S)
 
-    # get CC_STAT_AREA component as stats[label, COLUMN]
     areas = stats[1:, cv2.CC_STAT_AREA]
 
     image = np.zeros(labels.shape, np.uint8)
@@ -105,14 +107,14 @@ def remove_too_small(image, limit):
             image[labels == i + 1] = 255
     return image
 
-
+# Draws a black box around the area the bike is normally in
 def bike_filter(image):
     for i in range(int(400 / downscale), int(1080 / downscale)):
         for j in range(int(1300 / downscale), int(1900 / downscale)):
             image[i][j] = 0
     return image
 
-
+# Applies blurring filters
 def blur_image(image):
     img_blur = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     img_blur = cv2.pyrDown(img_blur)
@@ -127,8 +129,8 @@ def remove_too_straight_lines(image):
     linesp = cv2.HoughLinesP(image, 0.6, 7 * np.pi / 180, 45, None, 90, 5)
     if linesp is not None:
         for i in range(0, len(linesp)):
-            l = linesp[i][0]
-            cv2.line(image, (l[0], l[1]), (l[2], l[3]), (0, 0, 0), 30, cv2.LINE_AA)
+            line = linesp[i][0]
+            cv2.line(image, (line[0], line[1]), (line[2], line[3]), (0, 0, 0), 30, cv2.LINE_AA)
     return image
 
 
@@ -161,13 +163,15 @@ for img in tqdm.tqdm(IMGS):
 
     th3 = remove_too_straight_lines(th3)
 
-    th3 = remove_too_small(th3, 90)
+    th3 = remove_too_small(th3, 90)  # remove areas partly removed that now is too small
 
-    result = colorFilter(img,th3)
+    result = color_filter(img, th3)
+
     result = bike_filter(result)
-    result = remove_too_small(result, 90)
 
-    score = np.sum(result) / 255
+    result = remove_too_small(result, 90)   # remove areas partly removed that now is too small
+
+    score = np.sum(result) / 255  # number of positive pixels
 
     if score > 1000:
         crackIndexList.append(i)
@@ -178,12 +182,8 @@ for img in tqdm.tqdm(IMGS):
                 f"\nCracks detected at {datetime.timedelta(seconds=(i * 30) // FRAMESKIP)}\n    Score: {score},    Index: {i}")
             cv2.imwrite(f'detected_cracks/image{i}.png', img)
             cv2.imwrite(f'detected_cracks/image{i}_TH3_{score}.png', result)
-            #  cv2.imwrite(f'detected_cracks/{i}image_mask.png', mask)
-            # cv2.imwrite(f'detected_cracks/image_blur{i}.png', image_blur)
-            #  cv2.imwrite(f'detected_cracks/image_log{i}.png',log_image)
-            # cv2.imwrite(f'detected_cracks/image_th{i}.png', th3)
             time.sleep(0.1)
         cracks += 1
     i += 1
 f.close()
-print("Number of cracks detected:",cracks)
+print("Number of cracks detected:", cracks)

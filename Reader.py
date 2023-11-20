@@ -5,8 +5,10 @@ import time
 import pickle
 import easygui
 
-CUT = 1 #What portion of the video is encoded. 1 is the whole video, 2 is half, etc
-FRAMESKIP = 30 #How many frames between each new image. By default, it encodes every 30th image.
+# reads video to a list of images, and drop them i a pickle file
+
+CUT = 1  # What portion of the video is encoded. 1 is the whole video, 2 is half, etc
+FRAMESKIP = 30  # How many frames between each new image. By default, it encodes every 30th image.
 videodata = cv2.VideoCapture(easygui.fileopenbox())
 
 frames = int(videodata.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -22,7 +24,7 @@ print("Width:", width)
 
 currentFramesCounter = 0
 ret = True
-while (currentFramesCounter < frames // CUT - FRAMESKIP and ret):
+while currentFramesCounter < frames // CUT - FRAMESKIP and ret:
     ret, buf[currentFramesCounter // FRAMESKIP] = videodata.read()
     currentFramesCounter += FRAMESKIP
     videodata.set(cv2.CAP_PROP_POS_FRAMES, currentFramesCounter)
@@ -32,5 +34,3 @@ videodata.release()
 
 
 pickle.dump(buf, open("images2_2.p", "wb"))
-
-
