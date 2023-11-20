@@ -171,7 +171,7 @@ for img in tqdm.tqdm(IMGS):
 
     if score > 1000:
         crackIndexList.append(i)
-        if i + 1 in crackIndexList:
+        if i - 1 in crackIndexList:
             f.write(f"\n        Another subsequent crack found. Score: {score}, Index: {i}")
         else:
             f.write(
@@ -186,4 +186,4 @@ for img in tqdm.tqdm(IMGS):
         cracks += 1
     i += 1
 f.close()
-print(cracks)
+print("Number of cracks detected:",cracks)
