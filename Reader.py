@@ -5,7 +5,8 @@ import time
 import pickle
 import easygui
 
-# reads video to a list of images, and drop them i a pickle file
+# Reads video to a list of images, and writes it to a Pickle file.
+# If not needed, Pickle-files are included in the repository to test with.
 
 CUT = 1  # What portion of the video is encoded. 1 is the whole video, 2 is half, etc
 FRAMESKIP = 30  # How many frames between each new image. By default, it encodes every 30th image.
