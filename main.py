@@ -157,15 +157,15 @@ for img in tqdm.tqdm(IMGS):
 
     th3 = cv2.adaptiveThreshold(log_image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 1.1)
 
-    th3 = remove_too_small(th3, 100)
+    th3 = remove_too_small(th3, 90)
 
     th3 = remove_too_straight_lines(th3)
 
-    th3 = remove_too_small(th3, 100)
+    th3 = remove_too_small(th3, 90)
 
     result = colorFilter(img,th3)
     result = bike_filter(result)
-    result = remove_too_small(result, 110)
+    result = remove_too_small(result, 90)
 
     score = np.sum(result) / 255
 
