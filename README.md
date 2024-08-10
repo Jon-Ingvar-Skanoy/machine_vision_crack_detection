@@ -9,7 +9,7 @@ This project aims to detect cracks in pavement using classical image processing 
 
 - **Isak Killingrød**
 - **Jon Ingvar Jonassen Skånøy**
-- 
+  
 ## Use Case
 
 The system is designed for infrastructure maintenance teams to efficiently detect and locate cracks in pavement. By inputting video footage into the program, it processes the video and generates a list of timestamps corresponding to detected cracks. This list can be used for targeted pavement repairs.
