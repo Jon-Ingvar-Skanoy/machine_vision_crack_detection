@@ -1,9 +1,15 @@
 # Crack Detection in Pavements Using Classical Image Processing Techniques
 
+
 ## Project Overview
 
 This project aims to detect cracks in pavement using classical image processing techniques. The system processes unedited video footage recorded from a bicycle and identifies cracks or potholes in the pavement. The primary goal is to minimize human effort in reviewing extensive footage for infrastructure maintenance.
 
+## Authors
+
+- **Isak Killingrød**
+- **Jon Ingvar Jonassen Skånøy**
+- 
 ## Use Case
 
 The system is designed for infrastructure maintenance teams to efficiently detect and locate cracks in pavement. By inputting video footage into the program, it processes the video and generates a list of timestamps corresponding to detected cracks. This list can be used for targeted pavement repairs.
